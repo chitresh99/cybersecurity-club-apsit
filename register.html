@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberDefense CTF 2026 - Team Registration</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/config.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #050a10;
+            --bg-glass: rgba(20, 25, 40, 0.6);
+            --bg-glass-hover: rgba(30, 40, 60, 0.85);
+            --bg-card: rgba(15, 20, 35, 0.8);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #e0e6ed;
+            --text-muted: #94a3b8;
+            --text-label: #cbd5e1;
+            --accent-primary: #0066ff;
+            --accent-secondary: #00c2ff;
+            --accent-success: #00cc66;
+            --accent-error: #ff3366;
+            --input-bg: #111620;
+            --input-border: #334155;
+            --input-focus: #0066ff;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(0deg, transparent 24%, rgba(0, 102, 255, .05) 25%, rgba(0, 102, 255, .05) 26%, transparent 27%, transparent 74%, rgba(0, 102, 255, .05) 75%, rgba(0, 102, 255, .05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 102, 255, .05) 25%, rgba(0, 102, 255, .05) 26%, transparent 27%, transparent 74%, rgba(0, 102, 255, .05) 75%, rgba(0, 102, 255, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        @keyframes gridMove {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+
+        /* Glowing Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: 1;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-primary);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-secondary);
+            bottom: 20%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: var(--font-head);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: translateX(-5px);
+        }
+
+        .form-title {
+            font-family: var(--font-head);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .form-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: var(--accent-success);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 3rem 0 2rem;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+
+        .section-title {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .member-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .member-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.2);
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .member-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .member-label {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-label);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group label .required {
+            color: var(--accent-error);
+            margin-left: 0.25rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: var(--font-body);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+            background: rgba(17, 22, 32, 0.9);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        /* Radio Group for Team Leader */
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-group:has(input:checked) {
+            border-color: var(--accent-success);
+            background: rgba(0, 204, 102, 0.05);
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-success);
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 8px;
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 102, 255, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        /* Validation */
+        .form-control.error {
+            border-color: var(--accent-error);
+        }
+
+        .error-message {
+            color: var(--accent-error);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-control.error+.error-message {
+            display: block;
+        }
+
+        /* Success Message */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 16, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-overlay.show {
+            display: flex;
+        }
+
+        .success-content {
+            text-align: center;
+            max-width: 500px;
+            padding: 3rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--accent-success);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 204, 102, 0.3);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--accent-success);
+            margin-bottom: 1rem;
+            animation: successPop 0.5s ease;
+        }
+
+        @keyframes successPop {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Touch Interactions */
+        .btn-submit:active,
+        .back-btn:active,
+        .member-card:active {
+            transform: scale(0.98);
+            transition: transform 0.1s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .form-header {
+                margin-bottom: 2rem;
+                padding-top: 1rem;
+            }
+
+            .form-title {
+                font-size: 2rem;
+            }
+
+            .form-subtitle {
+                font-size: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .member-card {
+                padding: 1.5rem 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .back-btn {
+                position: static;
+                margin-bottom: 2rem;
+                display: inline-flex;
+            }
+
+            .btn-submit {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            input,
+            select,
+            textarea {
+                font-size: 16px;
+                /* Prevent iOS zoom */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+
+        <div class="form-header">
+            <div class="status-badge">🔥 Registration Open</div>
+            <h1 class="form-title">CyberDefense CTF 2026</h1>
+            <p class="form-subtitle">
+                Join 50+ teams in a 48-hour endurance test of your hacking skills. Register your team of 4 members
+                below.
+            </p>
+        </div>
+
+        <form id="registrationForm" class="form-card">
+            <!-- Team Name Section -->
+            <div class="form-group" style="margin-bottom: 3rem;">
+                <label for="teamName">Team Name<span class="required">*</span></label>
+                <input type="text" id="teamName" name="teamName" class="form-control" placeholder="Enter a team name"
+                    required style="font-size: 1.1rem; padding: 1rem; font-weight: 600;">
+                <div class="error-message">Team name is required</div>
+            </div>
+
+            <!-- Team Member 1 -->
+            <div class="member-card">
+                <div class="member-header">
+                    <div class="member-number">👑</div>
+                    <div class="member-label">Team Leader Details</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name1">Full Name<span class="required">*</span></label>
+                    <input type="text" id="name1" name="name1" class="form-control" placeholder="Enter full name"
+                        required>
+                    <div class="error-message">Full name is required</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email1">Email Address<span class="required">*</span></label>
+                        <input type="email" id="email1" name="email1" class="form-control"
+                            placeholder="student@apsit.edu.in" required>
+                        <div class="error-message">Please enter a valid email address</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="moodle1">Moodle ID<span class="required">*</span></label>
+                        <input type="text" id="moodle1" name="moodle1" class="form-control"
+                            placeholder="Enter Moodle ID" required>
+                        <div class="error-message">Moodle ID is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rollno1">Roll Number<span class="required">*</span></label>
+                        <input type="text" id="rollno1" name="rollno1" class="form-control"
+                            placeholder="Enter Roll Number" required>
+                        <div class="error-message">Roll number is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="div1">Division<span class="required">*</span></label>
+                        <input type="text" id="div1" name="div1" class="form-control" placeholder="e.g., A, B, C"
+                            maxlength="1" required>
+                        <div class="error-message">Division is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dept1">Department<span class="required">*</span></label>
+                        <select id="dept1" name="dept1" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                            <option value="CSE AI and ML">CSE AI and ML</option>
+                            <option value="CSE Data Science">CSE Data Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                        </select>
+                        <div class="error-message">Please select a department</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="year1">Year<span class="required">*</span></label>
+                        <select id="year1" name="year1" class="form-control" required>
+                            <option value="">Select Year</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                        <div class="error-message">Please select a year</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile1">Mobile Number<span class="required">*</span></label>
+                    <input type="tel" id="mobile1" name="mobile1" class="form-control"
+                        placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                    <div class="error-message">Please enter a valid 10-digit mobile number</div>
+                </div>
+
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="member-card">
+                <div class="member-header">
+                    <div class="member-number">2</div>
+                    <div class="member-label">Team Member 2</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name2">Full Name<span class="required">*</span></label>
+                    <input type="text" id="name2" name="name2" class="form-control" placeholder="Enter full name"
+                        required>
+                    <div class="error-message">Full name is required</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email2">Email Address<span class="required">*</span></label>
+                        <input type="email" id="email2" name="email2" class="form-control"
+                            placeholder="student@apsit.edu.in" required>
+                        <div class="error-message">Please enter a valid email address</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="moodle2">Moodle ID<span class="required">*</span></label>
+                        <input type="text" id="moodle2" name="moodle2" class="form-control"
+                            placeholder="Enter Moodle ID" required>
+                        <div class="error-message">Moodle ID is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rollno2">Roll Number<span class="required">*</span></label>
+                        <input type="text" id="rollno2" name="rollno2" class="form-control"
+                            placeholder="Enter Roll Number" required>
+                        <div class="error-message">Roll number is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="div2">Division<span class="required">*</span></label>
+                        <input type="text" id="div2" name="div2" class="form-control" placeholder="e.g., A, B, C"
+                            maxlength="1" required>
+                        <div class="error-message">Division is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dept2">Department<span class="required">*</span></label>
+                        <select id="dept2" name="dept2" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                            <option value="CSE AI and ML">CSE AI and ML</option>
+                            <option value="CSE Data Science">CSE Data Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                        </select>
+                        <div class="error-message">Please select a department</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="year2">Year<span class="required">*</span></label>
+                        <select id="year2" name="year2" class="form-control" required>
+                            <option value="">Select Year</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                        <div class="error-message">Please select a year</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile2">Mobile Number<span class="required">*</span></label>
+                    <input type="tel" id="mobile2" name="mobile2" class="form-control"
+                        placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                    <div class="error-message">Please enter a valid 10-digit mobile number</div>
+                </div>
+
+            </div>
+
+            <!-- Team Member 3 -->
+            <div class="member-card">
+                <div class="member-header">
+                    <div class="member-number">3</div>
+                    <div class="member-label">Team Member 3</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name3">Full Name<span class="required">*</span></label>
+                    <input type="text" id="name3" name="name3" class="form-control" placeholder="Enter full name"
+                        required>
+                    <div class="error-message">Full name is required</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email3">Email Address<span class="required">*</span></label>
+                        <input type="email" id="email3" name="email3" class="form-control"
+                            placeholder="student@apsit.edu.in" required>
+                        <div class="error-message">Please enter a valid email address</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="moodle3">Moodle ID<span class="required">*</span></label>
+                        <input type="text" id="moodle3" name="moodle3" class="form-control"
+                            placeholder="Enter Moodle ID" required>
+                        <div class="error-message">Moodle ID is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rollno3">Roll Number<span class="required">*</span></label>
+                        <input type="text" id="rollno3" name="rollno3" class="form-control"
+                            placeholder="Enter Roll Number" required>
+                        <div class="error-message">Roll number is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="div3">Division<span class="required">*</span></label>
+                        <input type="text" id="div3" name="div3" class="form-control" placeholder="e.g., A, B, C"
+                            maxlength="1" required>
+                        <div class="error-message">Division is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dept3">Department<span class="required">*</span></label>
+                        <select id="dept3" name="dept3" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                            <option value="CSE AI and ML">CSE AI and ML</option>
+                            <option value="CSE Data Science">CSE Data Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                        </select>
+                        <div class="error-message">Please select a department</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="year3">Year<span class="required">*</span></label>
+                        <select id="year3" name="year3" class="form-control" required>
+                            <option value="">Select Year</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                        <div class="error-message">Please select a year</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile3">Mobile Number<span class="required">*</span></label>
+                    <input type="tel" id="mobile3" name="mobile3" class="form-control"
+                        placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                    <div class="error-message">Please enter a valid 10-digit mobile number</div>
+                </div>
+
+            </div>
+
+            <!-- Team Member 4 -->
+            <div class="member-card">
+                <div class="member-header">
+                    <div class="member-number">4</div>
+                    <div class="member-label">Team Member 4</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name4">Full Name<span class="required">*</span></label>
+                    <input type="text" id="name4" name="name4" class="form-control" placeholder="Enter full name"
+                        required>
+                    <div class="error-message">Full name is required</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email4">Email Address<span class="required">*</span></label>
+                        <input type="email" id="email4" name="email4" class="form-control"
+                            placeholder="student@apsit.edu.in" required>
+                        <div class="error-message">Please enter a valid email address</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="moodle4">Moodle ID<span class="required">*</span></label>
+                        <input type="text" id="moodle4" name="moodle4" class="form-control"
+                            placeholder="Enter Moodle ID" required>
+                        <div class="error-message">Moodle ID is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rollno4">Roll Number<span class="required">*</span></label>
+                        <input type="text" id="rollno4" name="rollno4" class="form-control"
+                            placeholder="Enter Roll Number" required>
+                        <div class="error-message">Roll number is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="div4">Division<span class="required">*</span></label>
+                        <input type="text" id="div4" name="div4" class="form-control" placeholder="e.g., A, B, C"
+                            maxlength="1" required>
+                        <div class="error-message">Division is required</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dept4">Department<span class="required">*</span></label>
+                        <select id="dept4" name="dept4" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                            <option value="CSE AI and ML">CSE AI and ML</option>
+                            <option value="CSE Data Science">CSE Data Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                        </select>
+                        <div class="error-message">Please select a department</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="year4">Year<span class="required">*</span></label>
+                        <select id="year4" name="year4" class="form-control" required>
+                            <option value="">Select Year</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                        <div class="error-message">Please select a year</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile4">Mobile Number<span class="required">*</span></label>
+                    <input type="tel" id="mobile4" name="mobile4" class="form-control"
+                        placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                    <div class="error-message">Please enter a valid 10-digit mobile number</div>
+                </div>
+
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Submit Registration
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 style="font-family: var(--font-head); font-size: 2rem; margin-bottom: 1rem;">Registration Successful!
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                Your team has been successfully registered for CyberDefense CTF 2026. Check your email for confirmation.
+            </p>
+            <a href="index.html"
+                style="display: inline-block; padding: 1rem 2rem; background: var(--accent-primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 700;">
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registrationForm');
+        const successOverlay = document.getElementById('successOverlay');
+
+        // Form validation and submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Member 1 is always the team leader
+
+            // Disable submit button
+            const submitBtn = document.querySelector('.btn-submit');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+            try {
+                // Validate all fields
+                const formData = new FormData(form);
+
+                // Get team name
+                const teamName = formData.get('teamName');
+                if (!teamName) {
+                    throw new Error('Team name is required');
+                }
+
+                // Collect data for 4 members
+                const teamMembers = [];
+                for (let i = 1; i <= 4; i++) {
+                    teamMembers.push({
+                        name: formData.get(`name${i}`),
+                        email: formData.get(`email${i}`),
+                        moodle_id: formData.get(`moodle${i}`),
+                        roll_no: formData.get(`rollno${i}`),
+                        division: formData.get(`div${i}`),
+                        department: formData.get(`dept${i}`),
+                        year: formData.get(`year${i}`),
+                        mobile: formData.get(`mobile${i}`),
+                        is_leader: i === 1  // Member 1 is always the team leader
+                    });
+                }
+
+                const registrationData = {
+                    event_name: 'CyberDefense CTF 2026',
+                    team_name: teamName,
+                    team_members: teamMembers
+                };
+
+                console.log('Submitting Registration:', registrationData);
+
+                // Send to backend API
+                const baseURL = window.API_CONFIG?.baseURL || 'http://localhost:8001/api';
+                const response = await fetch(`${baseURL}/hackathon-teams`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log('Success:', result);
+                    successOverlay.classList.add('show');
+                } else {
+                    // Handle validation errors
+                    console.error('Error:', result);
+                    let errorMessage = result.error?.message || 'Registration failed';
+
+                    if (result.error?.details?.fields) {
+                        const fields = Object.entries(result.error.details.fields)
+                            .map(([field, msg]) => `${field}: ${msg}`)
+                            .join('\\n');
+                        errorMessage += '\\n\\n' + fields;
+                    }
+
+                    alert('Registration Failed:\\n\\n' + errorMessage);
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('Failed to submit registration. Please check your internet connection and try again.\\n\\nError: ' + error.message);
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        // Real-time validation
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('blur', () => {
+                if (!input.validity.valid) {
+                    input.classList.add('error');
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+
+            input.addEventListener('input', () => {
+                if (input.validity.valid) {
+                    input.classList.remove('error');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

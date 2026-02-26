@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Club APSIT // SECURE.LIGHT</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- API Configuration -->
+    <!-- API Configuration -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+
+    <style>
+        /* =========================================
+           1. CORE VARIABLES (THEME ENGINE)
+           ========================================= */
+        :root {
+            /* --- LIGHT THEME (Default) --- */
+            --bg-base: #f4f7f6;
+
+            /* Glass/Surface Colors */
+            --bg-glass: rgba(255, 255, 255, 0.6);
+            --bg-glass-hover: rgba(255, 255, 255, 0.85);
+            --bg-nav: rgba(255, 255, 255, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.8);
+
+            /* Text Colors */
+            --text-main: #1a1f2c;
+            --text-muted: #5a6b8c;
+
+            /* Input/Form Colors */
+            --input-bg: #ffffff;
+            --input-border: #e1e4e8;
+
+            /* ACCENTS (Kept vivid for both themes) */
+            --accent-primary: #0066ff;
+            /* Vivid Blue */
+            --accent-secondary: #00c2ff;
+            /* Cyan */
+            --accent-alert: #ff3366;
+            /* Red */
+            --accent-success: #00cc66;
+            /* Green */
+
+            /* Shadows & Effects */
+            --shadow-soft: 0 10px 40px rgba(0, 102, 255, 0.08);
+            --shadow-hover: 0 20px 50px rgba(0, 102, 255, 0.15);
+
+            /* Fonts & Ease */
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+            --theme-transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        /* --- DARK MODE OVERRIDES --- */
+        body.dark-mode {
+            --bg-base: #050a10;
+            /* Deep Void Blue/Black */
+
+            /* Dark Glass */
+            --bg-glass: rgba(20, 25, 40, 0.6);
+            --bg-glass-hover: rgba(30, 40, 60, 0.85);
+            --bg-nav: rgba(10, 15, 25, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.1);
+
+            /* Text Colors */
+            --text-main: #e0e6ed;
+            /* Off-white */
+            --text-muted: #94a3b8;
+            /* Cool Grey */
+
+            /* Input/Form Colors */
+            --input-bg: #111620;
+            --input-border: #334155;
+
+            /* Shadows (Glow effects in dark mode) */
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.5);
+            --shadow-hover: 0 0 30px rgba(0, 102, 255, 0.2);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            cursor: none;
+            /* Custom cursor */
+            transition: var(--theme-transition);
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        /* =========================================
+           2. VISUAL LAYERS (THREE.JS & CURSOR)
+           ========================================= */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #cursor-dot,
+        #cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2147483647;
+            border-radius: 50%;
+        }
+
+        input,
+        textarea,
+        select {
+            cursor: text;
+        }
+
+        button,
+        a,
+        .hover-trigger {
+            cursor: pointer;
+        }
+
+        #cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-primary);
+            margin-left: -4px;
+            margin-top: -4px;
+            box-shadow: 0 0 10px var(--accent-primary);
+        }
+
+        #cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 194, 255, 0.6);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, margin 0.2s;
+            margin-left: -20px;
+            margin-top: -20px;
+        }
+
+        body:hover #cursor-ring {
+            opacity: 1;
+        }
+
+        body.hover-active #cursor-ring {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 194, 255, 0.1);
+            border-color: transparent;
+            margin-left: -30px;
+            margin-top: -30px;
+        }
+
+        /* =========================================
+           3. UI COMPONENTS
+           ========================================= */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            padding: 0 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: var(--bg-nav);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(115deg, transparent 20%, rgba(0, 102, 255, 0.05) 40%, rgba(0, 194, 255, 0.1) 50%, rgba(0, 102, 255, 0.05) 60%, transparent 80%);
+            background-size: 50% 100%;
+            animation: holo-scan 5s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes holo-scan {
+            0% {
+                transform: translateX(0) skewX(-10deg);
+            }
+
+            100% {
+                transform: translateX(50%) skewX(-10deg);
+            }
+        }
+
+        .logo {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--text-main);
+            letter-spacing: -1px;
+        }
+
+        .logo i {
+            color: var(--accent-primary);
+            animation: pulse-logo 3s infinite;
+            filter: drop-shadow(0 0 5px rgba(0, 102, 255, 0.4));
+        }
+
+        @keyframes pulse-logo {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-primary);
+            opacity: 0;
+            z-index: -1;
+            transform: scale(0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 30px;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .nav-btn-special {
+            margin-left: 1.5rem;
+            padding: 0.6rem 1.5rem;
+            border: 1px solid var(--text-muted);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            background: transparent;
+            color: var(--text-main);
+        }
+
+        .nav-btn-special:hover {
+            background: var(--text-main);
+            color: var(--bg-base);
+            border-color: var(--text-main);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 5px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+
+        @media(max-width: 900px) {
+            nav {
+                padding: 0 1.5rem;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: var(--bg-nav);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border-bottom: 2px solid var(--accent-primary);
+            }
+
+            .nav-menu.active {
+                display: flex;
+                animation: slideDown 0.3s ease;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .nav-link {
+                width: 100%;
+                text-align: center;
+            }
+
+            .nav-btn-special {
+                margin: 0;
+                width: 100%;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4);
+            background: #0052cc;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-primary);
+            border: 2px solid var(--accent-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 102, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .section-wrapper {
+            position: relative;
+            z-index: 10;
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: var(--font-head);
+            font-size: 3.5rem;
+            line-height: 1.1;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .section-title span {
+            color: var(--accent-primary);
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+            background: var(--bg-glass-hover);
+            border-color: var(--accent-secondary);
+        }
+
+        .card h3 {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 102, 255, 0.1);
+            color: var(--accent-primary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .hero-content {
+            z-index: 10;
+            max-width: 1000px;
+            padding: 0 2rem;
+            background: transparent;
+            transform: translateZ(0);
+        }
+
+        .hero-tag {
+            display: inline-block;
+            font-family: monospace;
+            color: var(--accent-primary);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background: rgba(0, 102, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .hero-title {
+            font-family: var(--font-head);
+            font-size: 6rem;
+            line-height: 1.1;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            position: relative;
+            letter-spacing: -2px;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 102, 255, 0.2);
+            z-index: 2;
+        }
+
+        .hero-title span {
+            position: relative;
+            display: inline-block;
+            color: var(--accent-primary);
+            text-shadow: 0 0 30px rgba(0, 194, 255, 0.6);
+        }
+
+        /* GLITCH EFFECT */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+            background: var(--bg-body);
+        }
+
+        .glitch::before {
+            left: 3px;
+            text-shadow: -2px 0 #ff0055;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+            z-index: -1;
+        }
+
+        .glitch::after {
+            left: -3px;
+            text-shadow: -2px 0 #00ff66;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+            z-index: -2;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(10px, 9999px, 86px, 0);
+            }
+
+            5% {
+                clip: rect(74px, 9999px, 12px, 0);
+            }
+
+            10% {
+                clip: rect(14px, 9999px, 66px, 0);
+            }
+
+            15% {
+                clip: rect(81px, 9999px, 81px, 0);
+            }
+
+            20% {
+                clip: rect(2px, 9999px, 20px, 0);
+            }
+
+            25% {
+                clip: rect(98px, 9999px, 59px, 0);
+            }
+
+            30% {
+                clip: rect(25px, 9999px, 53px, 0);
+            }
+
+            35% {
+                clip: rect(61px, 9999px, 35px, 0);
+            }
+
+            40% {
+                clip: rect(4px, 9999px, 49px, 0);
+            }
+
+            45% {
+                clip: rect(31px, 9999px, 57px, 0);
+            }
+
+            50% {
+                clip: rect(99px, 9999px, 10px, 0);
+            }
+
+            55% {
+                clip: rect(83px, 9999px, 25px, 0);
+            }
+
+            60% {
+                clip: rect(14px, 9999px, 9px, 0);
+            }
+
+            65% {
+                clip: rect(48px, 9999px, 63px, 0);
+            }
+
+            70% {
+                clip: rect(23px, 9999px, 73px, 0);
+            }
+
+            75% {
+                clip: rect(38px, 9999px, 61px, 0);
+            }
+
+            80% {
+                clip: rect(90px, 9999px, 2px, 0);
+            }
+
+            85% {
+                clip: rect(77px, 9999px, 14px, 0);
+            }
+
+            90% {
+                clip: rect(10px, 9999px, 8px, 0);
+            }
+
+            95% {
+                clip: rect(66px, 9999px, 41px, 0);
+            }
+
+            100% {
+                clip: rect(16px, 9999px, 52px, 0);
+            }
+        }
+
+        .hero-desc {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.6;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            position: relative;
+            text-shadow: 0 0 20px var(--bg-base);
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        @media(max-width: 768px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+            }
+        }
+
+        .timeline-wrapper {
+            position: relative;
+            padding: 4rem 0;
+            overflow: hidden;
+            border-radius: 20px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            margin-bottom: 5rem;
+        }
+
+        .timeline-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(0deg, transparent 24%, rgba(0, 102, 255, .05) 25%, rgba(0, 102, 255, .05) 26%, transparent 27%, transparent 74%, rgba(0, 102, 255, .05) 75%, rgba(0, 102, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 102, 255, .05) 25%, rgba(0, 102, 255, .05) 26%, transparent 27%, transparent 74%, rgba(0, 102, 255, .05) 75%, rgba(0, 102, 255, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            animation: matrix-scroll 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        @keyframes matrix-scroll {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 0 1000px;
+            }
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            z-index: 1;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: var(--accent-primary);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .timeline-node {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            opacity: 0;
+            transition: all 0.6s var(--ease-smooth);
+        }
+
+        .timeline-node.left {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-node.right {
+            left: 50%;
+            text-align: left;
+        }
+
+        .timeline-node.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            top: 20px;
+            background: #fff;
+            border: 4px solid var(--accent-primary);
+            border-radius: 50%;
+            z-index: 2;
+            transition: 0.3s;
+        }
+
+        .timeline-node.right::after {
+            left: -10px;
+        }
+
+        .timeline-node:hover::after {
+            background: var(--accent-primary);
+            transform: scale(1.3);
+        }
+
+        .node-content {
+            padding: 1.5rem;
+            background: var(--bg-glass-hover);
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            box-shadow: var(--shadow-soft);
+            transition: 0.3s;
+        }
+
+        .node-content:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .skill-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .skill-list li {
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skill-list li i {
+            color: var(--accent-success);
+        }
+
+        .platform-card {
+            position: relative;
+            padding: 2rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-smooth);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: var(--bg-glass-hover);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--brand-color);
+        }
+
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--brand-color);
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+
+        .platform-card:hover::before {
+            width: 100%;
+            opacity: 0.05;
+        }
+
+        .platform-icon {
+            font-size: 2.5rem;
+            color: var(--brand-color);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .platform-card:hover .platform-icon {
+            transform: scale(1.2) rotate(-10deg);
+            filter: drop-shadow(0 0 10px var(--brand-color));
+        }
+
+        .platform-info h4 {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+        }
+
+        .platform-info p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .link-arrow {
+            margin-left: auto;
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: 0.3s;
+        }
+
+        .platform-card:hover .link-arrow {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--brand-color);
+        }
+
+        .cert-card {
+            background: var(--bg-glass);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 5px solid var(--cert-color);
+            border: 1px solid var(--border-glass);
+            border-left-width: 5px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .cert-card:hover {
+            transform: translateX(10px);
+            background: var(--bg-glass-hover);
+        }
+
+        .cert-info h4 {
+            margin: 0;
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .cert-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .time-badge {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        body.dark-mode .time-badge {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .member-card-v2 {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: all 0.4s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card-v2:hover {
+            transform: translateY(-10px);
+            background: var(--bg-glass-hover);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            border-color: var(--team-color);
+        }
+
+        .avatar-box {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(135deg, var(--bg-base), var(--team-color));
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--bg-base);
+            transition: transform 0.4s;
+        }
+
+        .member-card-v2:hover .avatar-box img {
+            transform: scale(1.05);
+        }
+
+        .member-name {
+            font-family: var(--font-head);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .member-role {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--team-color);
+            font-weight: 700;
+        }
+
+        .team-badge {
+            display: inline-block;
+            padding: 0.8rem 3rem;
+            background: var(--bg-glass);
+            border-radius: 0 20px 0 20px;
+            font-family: var(--font-head);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: var(--shadow-soft);
+            margin: 3rem 0 2rem;
+            position: relative;
+            border-left: 5px solid var(--team-color);
+            color: var(--team-color);
+        }
+
+        .style-faculty {
+            --team-color: #5a6b8c;
+        }
+
+        body.dark-mode .style-faculty {
+            --team-color: #94a3b8;
+        }
+
+        .style-lead {
+            --team-color: #FFD700;
+        }
+
+        .style-core {
+            --team-color: #0066ff;
+        }
+
+        .style-lit {
+            --team-color: #ff0055;
+        }
+
+        .style-event {
+            --team-color: #00cc66;
+        }
+
+        .style-media {
+            --team-color: #9933ff;
+        }
+
+        .style-publicity {
+            --team-color: #ff6600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+        }
+
+        .loader-container {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 20000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: var(--text-main);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 102, 255, 0.1);
+            border-top: 4px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-base);
+            padding: 3rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s var(--ease-smooth);
+            position: relative;
+            border: 1px solid var(--border-glass);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 11000;
+        }
+
+        .toast {
+            background: var(--bg-glass-hover);
+            color: var(--text-main);
+            padding: 1rem 1.5rem;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateX(120%);
+            transition: transform 0.4s var(--ease-smooth);
+            border-left: 4px solid var(--accent-primary);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        @keyframes glow-cycle {
+            0% {
+                background: #ff4d4d;
+                box-shadow: 0 0 15px #ff4d4d, 0 0 30px #ff4d4d;
+            }
+
+            25% {
+                background: #4dffff;
+                box-shadow: 0 0 15px #4dffff, 0 0 30px #4dffff;
+            }
+
+            50% {
+                background: #4dff4d;
+                box-shadow: 0 0 15px #4dff4d, 0 0 30px #4dff4d;
+            }
+
+            75% {
+                background: #ff4dff;
+                box-shadow: 0 0 15px #ff4dff, 0 0 30px #ff4dff;
+            }
+
+            100% {
+                background: #ff4d4d;
+                box-shadow: 0 0 15px #ff4d4d, 0 0 30px #ff4d4d;
+            }
+        }
+
+        .nucleus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: glow-cycle 4s infinite linear;
+        }
+
+        #particle-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            /* Behind the content but can be mixed with Three.js via opacity */
+            pointer-events: none;
+        }
+
+        /* =========================================
+   CYBER-MODAL SYSTEM
+   ========================================= */
+
+        /* The Container */
+        .cyber-modal {
+            background: rgba(15, 20, 30, 0.85);
+            /* Deep dark glass */
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 102, 255, 0.1);
+            border-radius: 16px;
+            padding: 0;
+            /* Removing padding to handle internal layout */
+            overflow: hidden;
+            transform: scale(0.95);
+            opacity: 0;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        /* Modal Header - The "Terminal Bar" */
+        .modal-header {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            padding: 2.5rem;
+        }
+
+        /* CYBER INPUTS (Floating Label & Animated Border) */
+        .cyber-input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .cyber-input {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 1rem;
+            color: var(--text-main);
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--text-muted);
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: var(--font-body);
+        }
+
+        /* Floating Label */
+        .cyber-label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: 0.3s ease all;
+        }
+
+        /* Focus State logic */
+        .cyber-input:focus~.cyber-label,
+        .cyber-input:valid~.cyber-label {
+            top: -15px;
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        /* The Animated Bottom Bar */
+        .input-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-primary);
+            transition: width 0.4s ease;
+        }
+
+        .cyber-input:focus~.input-bar {
+            width: 100%;
+        }
+
+        /* Loading State for Button */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Close Button */
+        .close-cyber {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-cyber:hover {
+            color: var(--accent-alert);
+            transform: rotate(90deg);
+        }
+
+        /* Scanline Decoration */
+        .cyber-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--accent-primary);
+            opacity: 0.3;
+            animation: scanModal 3s linear infinite;
+            pointer-events: none;
+            filter: blur(4px);
+        }
+
+        @keyframes scanModal {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* =========================================
+           4. MOBILE RESPONSIVENESS & INTERACTIVITY
+           ========================================= */
+
+        /* Touch feedback for interactive elements */
+        .btn:active,
+        .card:active,
+        .platform-card:active,
+        .cert-card:active,
+        .timeline-node:active .node-content {
+            transform: scale(0.98);
+            transition: transform 0.1s;
+        }
+
+        @media(max-width: 768px) {
+
+            /* General Layout Reset */
+            .section-wrapper {
+                padding: 4rem 1.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem;
+            }
+
+            /* Typography Adjustments */
+            .hero-title {
+                font-size: 3rem !important;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-desc {
+                font-size: 1.1rem;
+            }
+
+            /* Timeline Vertical Stacking */
+            .timeline::after {
+                left: 20px;
+            }
+
+            .timeline-node {
+                width: 100%;
+                padding-left: 60px;
+                padding-right: 0;
+            }
+
+            .timeline-node.left,
+            .timeline-node.right {
+                left: 0;
+                text-align: left;
+            }
+
+            .timeline-node::after {
+                left: 10px !important;
+                right: auto;
+            }
+
+            .timeline-node.left::after {
+                left: 10px;
+            }
+
+            /* Disable Custom Cursor on Touch Devices */
+            #cursor-dot,
+            #cursor-ring {
+                display: none !important;
+            }
+
+            *,
+            *::before,
+            *::after {
+                cursor: auto !important;
+            }
+
+            input,
+            textarea,
+            select {
+                padding: 0.8rem;
+                font-size: 16px;
+                /* Prevents iOS zoom on input focus */
+            }
+
+            /* Responsive Forms and Modals */
+            .cyber-modal {
+                width: 95%;
+                padding: 0;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 2rem 1.5rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <canvas id="particle-network"></canvas>
+    <canvas id="webgl-canvas"></canvas>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <div style="font-family: var(--font-head); font-weight:700; letter-spacing:1px;">LOADING SYSTEM</div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <nav>
+        <div class="logo hover-trigger" onclick="scrollToSection('home')">
+            <i class="fa-solid fa-shield-cat"></i>
+            <span>APSIT<span style="color:var(--accent-primary)">.CYBERSEC</span></span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a onclick="scrollToSection('home')" class="nav-link hover-trigger">Home</a></li>
+            <li><a onclick="scrollToSection('about')" class="nav-link hover-trigger">Mission</a></li>
+            <li><a onclick="scrollToSection('learn')" class="nav-link hover-trigger">Training</a></li>
+            <li><a onclick="scrollToSection('events')" class="nav-link hover-trigger">Events</a></li>
+            <li><a onclick="scrollToSection('hackathon')" class="nav-link hover-trigger">Hackathon</a></li>
+            <li><a onclick="scrollToSection('members')" class="nav-link hover-trigger">Squadron</a></li>
+            <li><a onclick="scrollToSection('contact')" class="nav-link hover-trigger">Contact</a></li>
+
+            <li style="display:flex; align-items:center;">
+                <a onclick="toggleAuthModal()" class="nav-btn-special hover-trigger">
+                    <i class="fa-solid fa-user-astronaut"></i> Admin Login
+                </a>
+
+                <button id="theme-toggle" class="theme-btn hover-trigger" title="Toggle Theme">
+                    <span class="icon">🌙</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="hamburger hover-trigger">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </div>
+    </nav>
+
+    <main>
+
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-tag">[ System Status: Secure ]</div>
+                    <h1 class="hero-title">
+                        <span class="glitch" data-text="SECURE">SECURE</span><br>
+                        <span class="glitch glow-text" data-text="THE UNSEEN">THE UNSEEN</span>
+                    </h1>
+                    <p class="hero-desc">
+                        Empowering the next generation of security engineers.
+                        We don't just learn to hack; we master the art of <span
+                            style="color:var(--accent-primary); font-weight: 700;">defense</span>.
+                    </p>
+
+                    <div class="hero-btns">
+                        <button class="btn btn-primary hover-trigger" onclick="scrollToSection('events')">
+                            <i class="fa-solid fa-shield-halved" style="margin-right:8px;"></i> Join Operations
+                        </button>
+                        <button class="btn btn-secondary hover-trigger" onclick="scrollToSection('learn')">
+                            <i class="fa-solid fa-terminal" style="margin-right:8px;"></i> Start Learning
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">About <span>Our Club</span></h2>
+                <p class="section-subtitle">The nexus of student-driven cybersecurity excellence.</p>
+            </div>
+
+            <div class="grid">
+                <div class="card hover-trigger" style="border-top: 4px solid var(--accent-primary);">
+                    <i class="fa-solid fa-shield-halved"
+                        style="font-size:2.5rem; color:var(--accent-primary); margin-bottom:1.5rem;"></i>
+                    <h3 style="color:var(--accent-primary);">About Us</h3>
+                    <p>
+                        A student-driven community at APSIT dedicated to spreading excellence in cybersecurity. We focus
+                        on practical learning and innovation to transform students into confident professionals ready
+                        for real-world challenges.
+                    </p>
+                </div>
+
+                <div class="card hover-trigger" style="border-top: 4px solid var(--accent-alert);">
+                    <i class="fa-solid fa-crosshairs"
+                        style="font-size:2.5rem; color:var(--accent-alert); margin-bottom:1.5rem;"></i>
+                    <h3 style="color:var(--accent-alert);">Our Mission</h3>
+                    <ul
+                        style="text-align:left; list-style:none; padding:0; color:var(--text-muted); font-size:0.95rem; line-height:1.8;">
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-alert); margin-right:8px;"></i> Build
+                            a strong student community.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-alert); margin-right:8px;"></i>
+                            Promote ethical hacking awareness.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-alert); margin-right:8px;"></i>
+                            Inspire future cyber defenders.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-alert); margin-right:8px;"></i>
+                            Create responsible digital citizens.</li>
+                    </ul>
+                </div>
+
+                <div class="card hover-trigger" style="border-top: 4px solid var(--accent-success);">
+                    <i class="fa-solid fa-eye"
+                        style="font-size:2.5rem; color:var(--accent-success); margin-bottom:1.5rem;"></i>
+                    <h3 style="color:var(--accent-success);">Our Vision</h3>
+                    <ul
+                        style="text-align:left; list-style:none; padding:0; color:var(--text-muted); font-size:0.95rem; line-height:1.8;">
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-success); margin-right:8px;"></i>
+                            Provide hands-on training.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-success); margin-right:8px;"></i>
+                            Organize workshops & competitions.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-success); margin-right:8px;"></i>
+                            Encourage teamwork & leadership.</li>
+                        <li><i class="fa-solid fa-check" style="color:var(--accent-success); margin-right:8px;"></i>
+                            Bridge academics with industry.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="learn" class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">Learning <span>Roadmap</span></h2>
+                <p class="section-subtitle">A structured path from novice to cyber-operative.</p>
+            </div>
+
+            <div class="timeline-wrapper">
+                <div class="timeline-bg"></div>
+                <div class="timeline">
+                    <div class="timeline-node left hover-trigger">
+                        <div class="node-content">
+                            <h3 style="color:var(--accent-primary);">01. Network Fundamentals</h3>
+                            <p>The foundation of the internet. Learn OSI model, TCP/IP handshakes, DNS resolution, HTTP
+                                protocols, and subnetting logic.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node right hover-trigger">
+                        <div class="node-content">
+                            <h3 style="color:var(--accent-secondary);">02. Linux & Scripting</h3>
+                            <p>Abandon the GUI. Master the Linux command line, file permissions, Bash automation, and
+                                Python for security scripting.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node left hover-trigger">
+                        <div class="node-content">
+                            <h3 style="color:var(--accent-alert);">03. Cryptography Basics</h3>
+                            <p>Protecting data at rest. Understand hashing (SHA), encryption (AES/RSA), digital
+                                signatures, and PKI infrastructure.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node right hover-trigger">
+                        <div class="node-content">
+                            <h3 style="color:var(--accent-success);">04. Penetration Testing</h3>
+                            <p>Offensive Operations. Learn reconnaissance (Nmap), scanning, exploitation (Metasploit),
+                                and report writing.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node left hover-trigger">
+                        <div class="node-content">
+                            <h3 style="color:var(--accent-secondary);">05. Malware Analysis</h3>
+                            <p>Dissecting the threat. Static and dynamic analysis of malicious binaries, reverse
+                                engineering, and sandboxing.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node right hover-trigger">
+                        <div class="node-content">
+                            <h3 style="color:var(--accent-primary);">06. Incident Response</h3>
+                            <p>The Blue Team. Detect breaches, analyze logs (Splunk), contain threats, and perform
+                                digital forensics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 2rem; font-family:var(--font-head); font-size:2rem; text-align:center;">Skill
+                <span>Trees</span>
+            </h3>
+            <div class="grid">
+                <div class="card hover-trigger" style="border-top: 4px solid var(--accent-success);">
+                    <h3><i class="fa-solid fa-seedling"></i> Beginner</h3>
+                    <ul class="skill-list">
+                        <li><i class="fa-solid fa-check"></i> Network Fundamentals</li>
+                        <li><i class="fa-solid fa-check"></i> Basic Cryptography</li>
+                        <li><i class="fa-solid fa-check"></i> Security Principles (CIA)</li>
+                        <li><i class="fa-solid fa-check"></i> Intro to Linux</li>
+                        <li><i class="fa-solid fa-check"></i> Web Security Basics</li>
+                    </ul>
+                </div>
+
+                <div class="card hover-trigger" style="border-top: 4px solid var(--accent-secondary);">
+                    <h3><i class="fa-solid fa-layer-group"></i> Intermediate</h3>
+                    <ul class="skill-list">
+                        <li><i class="fa-solid fa-check"></i> Penetration Testing</li>
+                        <li><i class="fa-solid fa-check"></i> Vulnerability Assessment</li>
+                        <li><i class="fa-solid fa-check"></i> Python for Hackers</li>
+                        <li><i class="fa-solid fa-check"></i> Wireless Security</li>
+                        <li><i class="fa-solid fa-check"></i> Ethical Hacking</li>
+                    </ul>
+                </div>
+
+                <div class="card hover-trigger" style="border-top: 4px solid var(--accent-alert);">
+                    <h3><i class="fa-solid fa-crosshairs"></i> Advanced</h3>
+                    <ul class="skill-list">
+                        <li><i class="fa-solid fa-check"></i> Malware Analysis</li>
+                        <li><i class="fa-solid fa-check"></i> Reverse Engineering</li>
+                        <li><i class="fa-solid fa-check"></i> Cloud Security (AWS/Azure)</li>
+                        <li><i class="fa-solid fa-check"></i> Zero-Day Research</li>
+                        <li><i class="fa-solid fa-check"></i> Threat Hunting</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 5rem; gap: 4rem;">
+
+                <div>
+                    <h3 style="margin-bottom: 2rem; font-family:var(--font-head);">Training <span>Grounds</span></h3>
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+                        <div class="platform-card hover-trigger" onclick="window.open('https://tryhackme.com')"
+                            style="--brand-color: #ff3366;">
+                            <i class="fa-solid fa-bullseye platform-icon"></i>
+                            <div class="platform-info">
+                                <h4>TryHackMe</h4>
+                                <p>Gamified cyber training. Best starting point for beginners.</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+                        </div>
+
+                        <div class="platform-card hover-trigger" onclick="window.open('https://hackthebox.com')"
+                            style="--brand-color: #00cc66;">
+                            <i class="fa-solid fa-cube platform-icon"></i>
+                            <div class="platform-info">
+                                <h4>HackTheBox</h4>
+                                <p>Real-world machine exploitation. Intermediate to Advanced.</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+                        </div>
+
+                        <div class="platform-card hover-trigger" onclick="window.open('https://overthewire.org')"
+                            style="--brand-color: #1a1f2c;">
+                            <i class="fa-solid fa-terminal platform-icon"></i>
+                            <div class="platform-info">
+                                <h4>OverTheWire</h4>
+                                <p>Wargames for Linux CLI & SSH mastery.</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+                        </div>
+
+                        <div class="platform-card hover-trigger"
+                            onclick="window.open('https://owasp.org/www-project-webgoat/')"
+                            style="--brand-color: #0066ff;">
+                            <i class="fa-solid fa-shield-cat platform-icon"></i>
+                            <div class="platform-info">
+                                <h4>OWASP WebGoat</h4>
+                                <p>Deliberately insecure web apps for training.</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 2rem; font-family:var(--font-head);">Certification <span>Path</span></h3>
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+                        <div class="cert-card hover-trigger" style="--cert-color: var(--accent-success);">
+                            <div class="cert-info">
+                                <h4>CompTIA Security+</h4>
+                                <div class="cert-meta">Level: Beginner-Intermediate</div>
+                            </div>
+                            <div class="time-badge">4-6 Weeks</div>
+                        </div>
+
+                        <div class="cert-card hover-trigger" style="--cert-color: var(--accent-secondary);">
+                            <div class="cert-info">
+                                <h4>CEH (Certified Ethical Hacker)</h4>
+                                <div class="cert-meta">Level: Intermediate</div>
+                            </div>
+                            <div class="time-badge">6-8 Weeks</div>
+                        </div>
+
+                        <div class="cert-card hover-trigger" style="--cert-color: var(--accent-alert);">
+                            <div class="cert-info">
+                                <h4>OSCP (Offensive Security)</h4>
+                                <div class="cert-meta">Level: Advanced (Hands-on)</div>
+                            </div>
+                            <div class="time-badge">2-3 Months</div>
+                        </div>
+
+                        <div class="cert-card hover-trigger" style="--cert-color: var(--accent-primary);">
+                            <div class="cert-info">
+                                <h4>CISSP (InfoSys Security)</h4>
+                                <div class="cert-meta">Level: Expert (Management)</div>
+                            </div>
+                            <div class="time-badge">3-4 Months</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="resources" class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">Resource <span>Library</span></h2>
+                <div style="margin-top:2rem;">
+                    <button class="btn btn-secondary hover-trigger" onclick="filterResources('all')">All</button>
+                    <button class="btn btn-secondary hover-trigger"
+                        onclick="filterResources('beginner')">Beginner</button>
+                    <button class="btn btn-secondary hover-trigger"
+                        onclick="filterResources('advanced')">Advanced</button>
+                </div>
+            </div>
+            <div class="grid" id="resourcesGrid"></div>
+        </section>
+
+        <section id="events" class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">Club <span>Events</span></h2>
+            </div>
+            <h3 style="color:var(--text-muted); margin-bottom:1.5rem;">Upcoming</h3>
+            <div class="grid" id="upcomingEventsGrid"></div>
+
+            <h3 style="color:var(--text-muted); margin:4rem 0 1.5rem;">Past Archives</h3>
+            <div class="grid" id="pastEventsGrid"></div>
+        </section>
+
+        <section id="hackathon" class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">CyberDefense <span>CTF</span></h2>
+            </div>
+            <div class="card hover-trigger" style="text-align: center; border-color: var(--accent-primary);">
+                <span class="tag" style="background:var(--accent-primary); color:white;">Registration Open</span>
+                <h3 style="font-size:2.5rem; margin:1.5rem 0;">Capture The Flag 2026</h3>
+                <p style="max-width:700px; margin:0 auto 2rem;">
+                    Join 50+ teams in a 48-hour endurance test of your hacking skills. Challenges include Web
+                    Exploitation, Cryptography, Reverse Engineering, and Forensics.
+                </p>
+                <a href="register.html" class="btn btn-primary" style="text-decoration: none;">Register
+                    Team</a>
+            </div>
+        </section>
+
+        <section id="members" class="section-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">The <span>Squadron</span></h2>
+                <p class="section-subtitle">Meet the minds securing the network.</p>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-faculty">Faculty Mentors</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
+                <div class="member-card-v2 style-faculty hover-trigger">
+                    <div class="avatar-box"><img src="images/faculty1.jpg" alt="Prof. Manjusha K."></div>
+                    <div class="member-name">Prof. Manjusha K.</div>
+                    <div class="member-role">Lead Mentor</div>
+                </div>
+                <div class="member-card-v2 style-faculty hover-trigger">
+                    <div class="avatar-box"><img src="images/faculty2.jpg" alt="Prof. Sneha Dalvi"></div>
+                    <div class="member-name">Prof. Sneha Dalvi</div>
+                    <div class="member-role">Technical Mentor</div>
+                </div>
+                <div class="member-card-v2 style-faculty hover-trigger">
+                    <div class="avatar-box"><img src="images/faculty3.jpg" alt="Prof. Randeep Kalhon"></div>
+                    <div class="member-name">Prof. Randeep Kalhon</div>
+                    <div class="member-role">Subject Expert</div>
+                </div>
+                <div class="member-card-v2 style-faculty hover-trigger">
+                    <div class="avatar-box"><img src="images/faculty4.jpg" alt="Prof. Saylee Lapalikar"></div>
+                    <div class="member-name">Prof. Saylee Lapalikar</div>
+                    <div class="member-role">Subject Expert</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-lead">Club Leads</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 4rem;">
+                <div class="member-card-v2 style-lead hover-trigger">
+                    <div class="avatar-box"><img src="images/pushkar.jpg" alt="Pushkar Karnik"></div>
+                    <div class="member-name">Pushkar Karnik</div>
+                    <div class="member-role">President</div>
+                </div>
+                <div class="member-card-v2 style-lead hover-trigger">
+                    <div class="avatar-box"><img src="images/harsh.jpg" alt="Harsh Koladkar"></div>
+                    <div class="member-name">Harsh Koladkar</div>
+                    <div class="member-role">Vice President</div>
+                </div>
+                <div class="member-card-v2 style-lead hover-trigger">
+                    <div class="avatar-box"><img src="images/shreyash.jpg" alt="Shreyash Narvekar"></div>
+                    <div class="member-name">Shreyash Narvekar</div>
+                    <div class="member-role">Technical Head</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-core">Core Heads</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
+                <div class="member-card-v2 style-core hover-trigger">
+                    <div class="avatar-box"><img src="images/rudra.jpg" alt="Rudra Sahu"></div>
+                    <div class="member-name">Rudra Sahu</div>
+                    <div class="member-role">Technical Co-Head</div>
+                </div>
+                <div class="member-card-v2 style-core hover-trigger">
+                    <div class="avatar-box"><img src="images/shubham.jpg" alt="Shubham Pawaskar"></div>
+                    <div class="member-name">Shubham Pawaskar</div>
+                    <div class="member-role">Technical Co-Head</div>
+                </div>
+                <div class="member-card-v2 style-core hover-trigger">
+                    <div class="avatar-box"><img src="images/sejal.jpg" alt="Sejal Naik"></div>
+                    <div class="member-name">Sejal Naik</div>
+                    <div class="member-role">Design Head</div>
+                </div>
+                <div class="member-card-v2 style-core hover-trigger">
+                    <div class="avatar-box"><img src="images/pratham.jpg" alt="Pratham Shetty"></div>
+                    <div class="member-name">Pratham Shetty</div>
+                    <div class="member-role">PR Head</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-lit">Literature Team</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
+                <div class="member-card-v2 style-lit hover-trigger">
+                    <div class="avatar-box"><img src="images/bhumika.jpg" alt="Bhumika Pandhare"></div>
+                    <div class="member-name">Bhumika Pandhare</div>
+                    <div class="member-role">Literature Head</div>
+                </div>
+                <div class="member-card-v2 style-lit hover-trigger">
+                    <div class="avatar-box"><img src="images/namrata.jpg" alt="Namrata Mane"></div>
+                    <div class="member-name">Namrata Mane</div>
+                    <div class="member-role">Literature Co-Head</div>
+                </div>
+                <div class="member-card-v2 style-lit hover-trigger">
+                    <div class="avatar-box"><img src="images/rinkal.jpg" alt="Rinkal Mishra"></div>
+                    <div class="member-name">Rinkal Mishra</div>
+                    <div class="member-role">Literature Co-Head</div>
+                </div>
+                <div class="member-card-v2 style-lit hover-trigger">
+                    <div class="avatar-box"><img src="images/kshitija.jpg" alt="Kshitija Patil"></div>
+                    <div class="member-name">Kshitija Patil</div>
+                    <div class="member-role">Literature Co-Head</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-event">Event Team</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
+                <div class="member-card-v2 style-event hover-trigger">
+                    <div class="avatar-box"><img src="images/siddharth.jpg" alt="Siddharth Kumar"></div>
+                    <div class="member-name">Siddharth Kumar</div>
+                    <div class="member-role">Event Head</div>
+                </div>
+                <div class="member-card-v2 style-event hover-trigger">
+                    <div class="avatar-box"><img src="images/tanushree.jpg" alt="Tanushree Gabhane"></div>
+                    <div class="member-name">Tanushree Gabhane</div>
+                    <div class="member-role">Event Co-Head</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-media">Media Team</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
+                <div class="member-card-v2 style-media hover-trigger">
+                    <div class="avatar-box"><img src="images/aditya.jpg" alt="Aditya Bhor"></div>
+                    <div class="member-name">Aditya Bhor</div>
+                    <div class="member-role">Photography Head</div>
+                </div>
+                <div class="member-card-v2 style-media hover-trigger">
+                    <div class="avatar-box"><img src="images/nakshi.jpg" alt="Nakshi Goda"></div>
+                    <div class="member-name">Nakshi Goda</div>
+                    <div class="member-role">Social Media Head</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="team-badge style-publicity">Publicity Team</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+                <div class="member-card-v2 style-publicity hover-trigger">
+                    <div class="avatar-box"><img src="images/vaibhavi.jpg" alt="Vaibhavi Naik"></div>
+                    <div class="member-name">Vaibhavi Naik</div>
+                    <div class="member-role">Publicity Head</div>
+                </div>
+                <div class="member-card-v2 style-publicity hover-trigger">
+                    <div class="avatar-box"><img src="images/prisha.jpg" alt="Prisha Jain"></div>
+                    <div class="member-name">Prisha Jain</div>
+                    <div class="member-role">Publicity Co-Head</div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="contact" class="section-wrapper">
+            <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="card">
+                    <h3>Get In Touch</h3>
+                    <form onsubmit="handleContact(event)">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea rows="4" required></textarea>
+                        </div>
+                        <button class="btn btn-primary" style="width:100%">Send Message</button>
+                    </form>
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center; padding: 2rem;">
+                    <h3 style="font-size:2rem; margin-bottom:1rem;">APSIT Cyber Club</h3>
+                    <p style="margin-bottom:2rem;">
+                        <i class="fa-solid fa-location-dot" style="color:var(--accent-primary)"></i> Thane,
+                        Maharashtra<br>
+                        <i class="fa-solid fa-envelope" style="color:var(--accent-primary)"></i> cyberclub@apsit.edu.in
+                    </p>
+                    <div style="display:flex; gap:1rem;">
+                        <button class="btn btn-secondary"><i class="fa-brands fa-linkedin"></i></button>
+                        <button class="btn btn-secondary"><i class="fa-brands fa-instagram"></i></button>
+                        <button class="btn btn-secondary"><i class="fa-brands fa-discord"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="cyber-modal modal-content">
+            <div class="cyber-scanline"></div>
+
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-terminal"></i> SYSTEM ACCESS
+                </div>
+                <button class="close-cyber" onclick="closeModal('authModal')">[X]</button>
+            </div>
+
+            <div class="modal-body">
+                <form onsubmit="handleLogin(event)">
+                    <div class="cyber-input-group">
+                        <input type="text" class="cyber-input" required>
+                        <span class="input-bar"></span>
+                        <label class="cyber-label">Moodle ID / Username</label>
+                    </div>
+
+                    <div class="cyber-input-group">
+                        <input type="password" class="cyber-input" required>
+                        <span class="input-bar"></span>
+                        <label class="cyber-label">Access Key (Password)</label>
+                    </div>
+
+                    <button class="btn btn-primary" style="width:100%; margin-top:1rem;">
+                        <i class="fa-solid fa-unlock"></i> Authenticate
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="eventModal">
+        <div class="cyber-modal modal-content">
+            <div class="cyber-scanline"></div>
+
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-calendar-check"></i> EVENT_REG_PROTOCOL
+                </div>
+                <button class="close-cyber" onclick="closeModal('eventModal')">[X]</button>
+            </div>
+
+            <div class="modal-body">
+                <form onsubmit="handleModalSubmit(event)">
+                    <div class="cyber-input-group">
+                        <input type="text" class="cyber-input" required>
+                        <span class="input-bar"></span>
+                        <label class="cyber-label">Operative Name</label>
+                    </div>
+
+                    <div class="cyber-input-group">
+                        <input type="text" class="cyber-input" required>
+                        <span class="input-bar"></span>
+                        <label class="cyber-label">Moodle ID</label>
+                    </div>
+
+                    <div class="cyber-input-group">
+                        <input type="text" id="modalEventName" class="cyber-input" readonly
+                            style="color: var(--accent-primary); font-weight:bold; border-bottom: 1px dashed var(--accent-primary);">
+                        <label class="cyber-label"
+                            style="color:var(--accent-primary); top:-15px; font-size:0.75rem;">Target Event</label>
+                    </div>
+
+                    <button class="btn btn-primary" style="width:100%; margin-top:1rem;">
+                        <i class="fa-solid fa-fingerprint"></i> Confirm Registration
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="adminModal">
+        <div class="cyber-modal modal-content" style="border-color: var(--accent-alert);">
+            <div class="cyber-scanline" style="background: var(--accent-alert);"></div>
+
+            <div class="modal-header">
+                <div class="modal-title" style="color: var(--accent-alert);">
+                    <i class="fa-solid fa-shield-virus"></i> ADMIN_CONSOLE
+                </div>
+                <button class="close-cyber" onclick="closeModal('adminModal')">[X]</button>
+            </div>
+
+            <div class="modal-body">
+                <form onsubmit="handleAdminCreate(event)">
+                    <div class="cyber-input-group">
+                        <input type="text" id="newEventTitle" class="cyber-input" required>
+                        <span class="input-bar" style="background:var(--accent-alert)"></span>
+                        <label class="cyber-label">Mission Title</label>
+                    </div>
+
+                    <div class="cyber-input-group">
+                        <select id="newEventType" class="cyber-input" style="padding: 10px 0;">
+                            <option>Workshop</option>
+                            <option>Hackathon</option>
+                            <option>Seminar</option>
+                        </select>
+                        <span class="input-bar" style="background:var(--accent-alert)"></span>
+                        <label class="cyber-label" style="top:-15px; font-size:0.75rem;">Mission Type</label>
+                    </div>
+
+                    <div class="cyber-input-group">
+                        <input type="date" id="newEventDate" class="cyber-input" required>
+                        <span class="input-bar" style="background:var(--accent-alert)"></span>
+                        <label class="cyber-label" style="top:-15px; font-size:0.75rem;">Date</label>
+                    </div>
+
+                    <div class="cyber-input-group">
+                        <textarea id="newEventDesc" class="cyber-input" rows="2" required></textarea>
+                        <span class="input-bar" style="background:var(--accent-alert)"></span>
+                        <label class="cyber-label">Briefing</label>
+                    </div>
+
+                    <button class="btn"
+                        style="width:100%; margin-top:1rem; background:var(--accent-alert); color:white;">
+                        <i class="fa-solid fa-upload"></i> Upload to Network
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- GLOBAL VARIABLES ---
+        let scene, renderer;
+        let isDarkMode = false;
+
+        // --- THEME CONFIGURATION ---
+        const themeConfig = {
+            currentBase: new THREE.Color(0xf4f7f6),
+            currentDeep: new THREE.Color(0xe0f7fa),
+            lightBase: new THREE.Color(0xf4f7f6),
+            lightDeep: new THREE.Color(0xe0f7fa),
+            darkBase: new THREE.Color(0x050a10),
+            darkDeep: new THREE.Color(0x000000)
+        };
+
+        const initThreeJS = () => {
+            const canvas = document.getElementById('webgl-canvas');
+            if (!canvas) return;
+
+            // --- SCENE SETUP ---
+            scene = new THREE.Scene();
+            isDarkMode = document.body.classList.contains('dark-mode');
+            themeConfig.currentBase.copy(isDarkMode ? themeConfig.darkBase : themeConfig.lightBase);
+            themeConfig.currentDeep.copy(isDarkMode ? themeConfig.darkDeep : themeConfig.lightDeep);
+
+            scene.background = themeConfig.currentBase;
+            scene.fog = new THREE.FogExp2(themeConfig.currentBase, 0.02);
+
+            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.physicallyCorrectLights = true;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+
+            // --- HERO GROUP ---
+            const heroGroup = new THREE.Group();
+            heroGroup.scale.set(1.2, 1.2, 1.2);
+            scene.add(heroGroup);
+
+            // 1. NUCLEUS
+            const nucleusGeo = new THREE.OctahedronGeometry(2, 2);
+            const nucleusMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff, emissive: 0x0066ff, emissiveIntensity: 0.8,
+                wireframe: true, transparent: true, opacity: 0.9
+            });
+            const nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+            heroGroup.add(nucleus);
+
+            // 2. SHELL
+            const shellGeo = new THREE.IcosahedronGeometry(4, 1);
+            const shellMat = new THREE.MeshPhysicalMaterial({
+                color: 0x00c2ff, metalness: 0.1, roughness: 0.0,
+                transmission: 0.9, thickness: 2.0, clearcoat: 1.0, side: THREE.DoubleSide
+            });
+            const shell = new THREE.Mesh(shellGeo, shellMat);
+            heroGroup.add(shell);
+
+            // 3. SHIELD
+            const shieldGeo = new THREE.IcosahedronGeometry(5.5, 1);
+            const shieldMat = new THREE.MeshBasicMaterial({ color: 0x0066ff, wireframe: true, transparent: true, opacity: 0.15 });
+            const shield = new THREE.Mesh(shieldGeo, shieldMat);
+            heroGroup.add(shield);
+
+            // 4. PARTICLES (3D)
+            const pGroup = new THREE.Group();
+            heroGroup.add(pGroup);
+            const geometries = [new THREE.TetrahedronGeometry(0.4, 0), new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.OctahedronGeometry(0.4, 0)];
+            const colors = [0x0066ff, 0xff0055, 0x00cc66, 0xffcc00];
+
+            for (let i = 0; i < 50; i++) {
+                const geom = geometries[Math.floor(Math.random() * geometries.length)];
+                const mat = new THREE.MeshBasicMaterial({ color: colors[Math.floor(Math.random() * colors.length)], wireframe: true, transparent: true, opacity: 0.6 });
+                const mesh = new THREE.Mesh(geom, mat);
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const r = 9 + Math.random() * 6;
+                mesh.position.set(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+                mesh.rotation.set(Math.random(), Math.random(), Math.random());
+                mesh.userData = { rotX: (Math.random() - 0.5) * 0.05, rotY: (Math.random() - 0.5) * 0.05 };
+                pGroup.add(mesh);
+            }
+
+            // 5. RINGS
+            const ringGeo = new THREE.TorusGeometry(8, 0.02, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x00c2ff, transparent: true, opacity: 0.3 });
+            const ring1 = new THREE.Mesh(ringGeo, ringMat); ring1.rotation.x = Math.PI / 2; heroGroup.add(ring1);
+            const ring2 = new THREE.Mesh(ringGeo, ringMat); ring2.rotation.y = Math.PI / 3; heroGroup.add(ring2);
+
+            // --- LIGHTING ---
+            const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
+            scene.add(ambientLight);
+            const spotLight1 = new THREE.PointLight(0x0066ff, 20, 50); spotLight1.position.set(10, 10, 10); scene.add(spotLight1);
+            const spotLight2 = new THREE.PointLight(0xff0055, 20, 50); spotLight2.position.set(-10, -10, 10); scene.add(spotLight2);
+
+            // --- TUNNEL ---
+            const tunnelGroup = new THREE.Group();
+            scene.add(tunnelGroup);
+            tunnelGroup.visible = false;
+            const tunnelRings = [];
+            for (let i = 0; i < 30; i++) {
+                const tGeo = new THREE.TorusGeometry(5 + (i * 0.5), 0.1, 2, 6);
+                const tMat = new THREE.MeshBasicMaterial({ color: 0x00c2ff, transparent: true, opacity: 0 });
+                const hex = new THREE.Mesh(tGeo, tMat);
+                hex.position.z = -10 - (i * 5);
+                hex.rotation.z = i * 0.1;
+                tunnelGroup.add(hex);
+                tunnelRings.push({ mesh: hex, originalZ: hex.position.z, index: i });
+            }
+
+            // --- ANIMATION ---
+            let mouseX = 0, mouseY = 0;
+            let targetRotX = 0, targetRotY = 0;
+            let currentRotX = 0, currentRotY = 0;
+            let scrollY = 0;
+            const clock = new THREE.Clock();
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth) - 0.5;
+                mouseY = (e.clientY / window.innerHeight) - 0.5;
+            });
+            window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+            // --- RENDER LOOP ---
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const time = clock.getElapsedTime();
+                const maxScroll = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = Math.min(scrollY / maxScroll, 1);
+
+                // Physics
+                targetRotY = mouseX * 0.8; targetRotX = mouseY * 0.8;
+                currentRotY += (targetRotY - currentRotY) * 0.05;
+                currentRotX += (targetRotX - currentRotX) * 0.05;
+
+                // BACKGROUND COLOR LOGIC
+                if (scrollPercent > 0.2) {
+                    const phase2Progress = (scrollPercent - 0.2) * 1.5;
+                    const mixedColor = new THREE.Color().copy(themeConfig.currentBase).lerp(themeConfig.currentDeep, Math.min(phase2Progress, 1));
+                    scene.background = mixedColor;
+                    scene.fog.color = mixedColor;
+                } else {
+                    scene.background = new THREE.Color().copy(themeConfig.currentBase);
+                    scene.fog.color = new THREE.Color().copy(themeConfig.currentBase);
+                }
+
+                // HERO PHASE
+                if (scrollPercent < 0.45) {
+                    heroGroup.visible = true;
+                    heroGroup.rotation.y = currentRotY + time * 0.1;
+                    heroGroup.rotation.x = currentRotX;
+
+                    nucleus.rotation.y -= 0.01; nucleus.rotation.z += 0.01;
+                    shield.rotation.y += 0.005;
+                    ring1.rotation.x = (Math.PI / 2) + Math.sin(time * 0.5) * 0.2;
+                    ring2.rotation.y = (Math.PI / 3) + Math.cos(time * 0.4) * 0.2;
+
+                    pGroup.rotation.y = -time * 0.05;
+                    pGroup.children.forEach(p => { p.rotation.x += p.userData.rotX; p.rotation.y += p.userData.rotY; });
+
+                    const hue = (time * 0.05) % 1;
+                    const colorA = new THREE.Color().setHSL(hue, 0.8, 0.5);
+                    const colorB = new THREE.Color().setHSL((hue + 0.5) % 1, 0.8, 0.5);
+                    nucleus.material.emissive.lerp(colorA, 0.05);
+                    shield.material.color.lerp(colorB, 0.05);
+
+                    const flyThrough = scrollPercent * 60;
+                    heroGroup.position.z = flyThrough;
+
+                    const opacity = 1 - (scrollPercent * 3);
+                    heroGroup.children.forEach(child => {
+                        const factor = (child === nucleus) ? 0.9 : 0.3;
+                        if (child.material) child.material.opacity = Math.max(0, opacity * factor);
+                    });
+
+                    const expansion = 1 + scrollPercent * 1.5;
+                    shield.scale.setScalar(expansion);
+                    pGroup.scale.setScalar(expansion);
+                } else {
+                    heroGroup.visible = false;
+                }
+
+                // TUNNEL PHASE
+                if (scrollPercent > 0.2) {
+                    tunnelGroup.visible = true;
+                    const phase2Progress = (scrollPercent - 0.2) * 1.5;
+                    tunnelGroup.rotation.x = currentRotX * 0.5;
+                    tunnelGroup.rotation.y = currentRotY * 0.5;
+                    tunnelRings.forEach((ring) => {
+                        let newZ = ring.originalZ + (phase2Progress * 80);
+                        if (newZ > 20) newZ -= 150;
+                        ring.mesh.position.z = newZ;
+                        ring.mesh.rotation.z = (ring.index * 0.1) + (time * 0.5) + (phase2Progress * 5);
+                        let opacity = 0;
+                        if (newZ < 10 && newZ > -60) opacity = 1 - (Math.abs(newZ + 10) / 60);
+                        ring.mesh.material.opacity = Math.max(0, opacity * 0.6);
+                        ring.mesh.material.color.setHSL((time * 0.1 + ring.index * 0.05) % 1, 0.8, 0.5);
+                    });
+                } else {
+                    tunnelGroup.visible = false;
+                }
+                renderer.render(scene, camera);
+            };
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // --- THEME TOGGLE LOGIC ---
+        const initThemeToggle = () => {
+            const toggleButton = document.getElementById('theme-toggle');
+            const iconSpan = toggleButton.querySelector('.icon');
+            const body = document.body;
+
+            if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('dark-mode');
+                iconSpan.textContent = '☀️';
+            }
+
+            toggleButton.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                const isDark = body.classList.contains('dark-mode');
+                iconSpan.textContent = isDark ? '☀️' : '🌙';
+
+                if (scene) {
+                    const targetBase = isDark ? themeConfig.darkBase : themeConfig.lightBase;
+                    const targetDeep = isDark ? themeConfig.darkDeep : themeConfig.lightDeep;
+
+                    gsap.to(themeConfig.currentBase, { r: targetBase.r, g: targetBase.g, b: targetBase.b, duration: 0.5 });
+                    gsap.to(themeConfig.currentDeep, { r: targetDeep.r, g: targetDeep.g, b: targetDeep.b, duration: 0.5 });
+                }
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+        }
+
+        // --- MATRIX RAIN BACKGROUND ---
+        const initMatrixRain = () => {
+            const canvas = document.getElementById('particle-network');
+            const ctx = canvas.getContext('2d');
+
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+            const charArray = characters.split('');
+
+            const fontSize = 14;
+            let columns = width / fontSize;
+            let drops = [];
+
+            // Initialize drops
+            for (let x = 0; x < columns; x++) {
+                drops[x] = Math.random() * height; // Start at random Y positions
+            }
+
+            const draw = () => {
+                // Semi-transparent black to create trailing effect (faster fade)
+                ctx.fillStyle = isDarkMode ? 'rgba(2, 4, 8, 0.2)' : 'rgba(244, 247, 246, 0.2)';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.fillStyle = isDarkMode ? 'rgba(0, 194, 255, 0.08)' : 'rgba(0, 102, 255, 0.05)'; // Very faint cyan
+                ctx.font = fontSize + 'px monospace';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = charArray[Math.floor(Math.random() * charArray.length)];
+
+                    // Add faint head to the falling line occasionally
+                    if (Math.random() > 0.95) {
+                        ctx.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 102, 255, 0.3)';
+                    } else {
+                        ctx.fillStyle = isDarkMode ? 'rgba(0, 194, 255, 0.08)' : 'rgba(0, 102, 255, 0.05)';
+                    }
+
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    // Drop reset logic
+                    if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+
+                    drops[i]++;
+                }
+
+                requestAnimationFrame(draw);
+            };
+
+            draw();
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                columns = width / fontSize;
+                drops = [];
+                for (let x = 0; x < columns; x++) {
+                    drops[x] = Math.random() * height;
+                }
+            });
+        };
+
+        // --- UTILS & DATA ---
+        const initCursor = () => {
+            const dot = document.getElementById('cursor-dot');
+            const ring = document.getElementById('cursor-ring');
+            document.addEventListener('mousemove', (e) => {
+                gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0 });
+                gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.15 });
+            });
+            document.querySelectorAll('.hover-trigger, a, button, input').forEach(t => {
+                t.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+                t.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+            });
+        };
+
+        let events = [];
+        let resources = [];
+        let currentUser = null;
+
+        // Load data from backend on init
+        async function loadDataFromBackend() {
+            // Load events
+            const eventsResult = await apiService.getEvents();
+            if (eventsResult.success) {
+                events = eventsResult.data.map(e => ({
+                    id: e.id,
+                    title: e.title,
+                    type: e.type,
+                    date: e.date,
+                    desc: e.description || "",
+                    status: new Date(e.date) > new Date() ? "upcoming" : "past",
+                    is_active: e.is_active
+                }));
+            }
+
+            // Load resources
+            const resourcesResult = await apiService.getResources();
+            if (resourcesResult.success) {
+                resources = resourcesResult.data.map(r => ({
+                    id: r.id,
+                    title: r.title,
+                    level: r.level.toLowerCase()
+                }));
+            }
+
+            // Check if user is already logged in
+            if (apiService.getToken()) {
+                const userResult = await apiService.getCurrentUser();
+                if (userResult.success) {
+                    currentUser = userResult.data;
+                }
+            }
+        }
+
+        function renderEvents() {
+            const createCard = (e, isPast = false) => `
+            <div class="card hover-trigger" style="${isPast ? 'opacity:0.7' : ''}">
+                <span class="tag">${e.type}</span>
+                <h3>${e.title}</h3>
+                <p style="color:var(--accent-primary); font-weight:bold; margin-bottom:0.5rem;">${e.date}</p>
+                <p>${e.desc}</p>
+                ${!isPast ? `<button class="btn btn-secondary" style="margin-top:1rem; width:100%" onclick="openEventRegistration('${e.title}')">Register</button>` : ''}
+            </div>`;
+            document.getElementById('upcomingEventsGrid').innerHTML = events.filter(e => e.status === 'upcoming').map(e => createCard(e)).join('');
+            document.getElementById('pastEventsGrid').innerHTML = events.filter(e => e.status === 'past').map(e => createCard(e, true)).join('');
+        }
+
+        function filterResources(level) {
+            const filtered = level === 'all' ? resources : resources.filter(r => r.level === level);
+            document.getElementById('resourcesGrid').innerHTML = filtered.map(r => `
+            <div class="card hover-trigger">
+                <i class="fa-solid fa-file-lines" style="font-size:2rem; color:var(--accent-secondary); margin-bottom:1rem;"></i>
+                <h3>${r.title}</h3>
+                <span class="tag" style="background:var(--bg-base); border:1px solid #ccc; color:#555;">${r.level}</span>
+                <button class="btn btn-secondary" style="margin-top:1rem; display:block; width:100%" onclick="downloadResourceFile('${r.id}', '${r.title}')">Download</button>
+            </div>`).join('');
+        }
+
+        async function downloadResourceFile(resourceId, title) {
+            const result = await apiService.downloadResource(resourceId);
+            if (!result.success) {
+                showToast("Download failed: " + result.error, "error");
+            }
+        }
+
+        function scrollToSection(id) { gsap.to(window, { duration: 1, scrollTo: `#${id}`, ease: "power2.inOut" }); }
+
+        // --- ANIMATED MODAL OPENER ---
+        function openModalAnimation(modalId) {
+            const overlay = document.getElementById(modalId);
+            const content = overlay.querySelector('.cyber-modal');
+            const elements = overlay.querySelectorAll('.modal-header, .cyber-input-group, button');
+
+            overlay.classList.add('active');
+
+            // Reset and Animate
+            gsap.set(content, { scale: 0.9, opacity: 0, rotationX: 10 });
+            gsap.set(elements, { y: 20, opacity: 0 });
+
+            gsap.to(content, { scale: 1, opacity: 1, rotationX: 0, duration: 0.4, ease: "back.out(1.7)" });
+            gsap.to(elements, { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, delay: 0.1, ease: "power2.out" });
+        }
+
+        // Updated Trigger Functions
+        function toggleAuthModal() { openModalAnimation('authModal'); }
+        function openEventRegistration(title) { document.getElementById('modalEventName').value = title; openModalAnimation('eventModal'); }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // --- FORM HANDLING WITH LOADING STATES ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.classList.add('btn-loading');
+
+            const username = e.target.querySelector('input[type="text"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+
+            const result = await apiService.login(username, password);
+
+            if (result.success) {
+                apiService.setToken(result.data.access_token);
+                currentUser = { username };
+                btn.classList.remove('btn-loading');
+                showToast("Identity Verified. Welcome back.", "success");
+                closeModal('authModal');
+                e.target.reset();
+            } else {
+                btn.classList.remove('btn-loading');
+                showToast(result.error || "Authentication failed", "error");
+            }
+        }
+
+        async function handleModalSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.classList.add('btn-loading');
+
+            const operativeName = e.target.querySelector('input[type="text"]').value;
+            const moodleId = e.target.querySelectorAll('input[type="text"]')[1].value;
+            const eventName = document.getElementById('modalEventName').value;
+
+            // Find event by title
+            const event = events.find(e => e.title === eventName);
+
+            if (!event) {
+                btn.classList.remove('btn-loading');
+                showToast("Event not found", "error");
+                return;
+            }
+
+            const result = await apiService.registerForEvent(event.id, operativeName, moodleId);
+
+            if (result.success) {
+                btn.classList.remove('btn-loading');
+                showToast("Registration Uplink Successful", "success");
+                closeModal('eventModal');
+                e.target.reset();
+            } else {
+                btn.classList.remove('btn-loading');
+                showToast(result.error || "Registration failed", "error");
+            }
+        }
+
+        async function handleAdminCreate(e) {
+            e.preventDefault();
+
+            // Check if user is authenticated
+            if (!apiService.getToken()) {
+                showToast("Admin authentication required", "error");
+                return;
+            }
+
+            const btn = e.target.querySelector('button');
+            btn.classList.add('btn-loading');
+
+            const title = document.getElementById('newEventTitle').value;
+            const type = document.getElementById('newEventType').value;
+            const date = document.getElementById('newEventDate').value;
+            const description = document.getElementById('newEventDesc').value;
+
+            // Map type to backend enum
+            const typeMap = { 'Workshop': 'WORKSHOP', 'Hackathon': 'HACKATHON', 'Seminar': 'SEMINAR' };
+
+            const result = await apiService.createEvent({
+                title,
+                type: typeMap[type] || type,
+                date,
+                description
+            });
+
+            if (result.success) {
+                btn.classList.remove('btn-loading');
+                events.unshift({
+                    id: result.data.id,
+                    title: result.data.title,
+                    type: result.data.type,
+                    date: result.data.date,
+                    desc: result.data.description,
+                    status: "upcoming",
+                    is_active: result.data.is_active
+                });
+                renderEvents();
+                closeModal('adminModal');
+                showToast("Event Published", "success");
+                e.target.reset();
+            } else {
+                btn.classList.remove('btn-loading');
+                showToast(result.error || "Event creation failed", "error");
+            }
+        }
+
+        function showToast(msg, type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderLeftColor = type === 'error' ? 'var(--accent-alert)' : 'var(--accent-success)';
+            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}" style="color:${type === 'error' ? 'var(--accent-alert)' : 'var(--accent-success)'}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
+        }
+
+        // --- MAIN INIT ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Initialize core UI elements
+                initThemeToggle();
+                initThreeJS();
+                initMatrixRain();
+                initCursor();
+
+                // Attempt to load data, but don't prevent page load if backend is down
+                try {
+                    await loadDataFromBackend();
+                } catch (apiError) {
+                    console.error("Backend connection failed. Loading local/cached UI.", apiError);
+                }
+
+                renderEvents();
+                filterResources('all');
+
+                // Scroll Triggers
+                gsap.utils.toArray('.timeline-node').forEach(node => {
+                    gsap.from(node, { scrollTrigger: { trigger: node, start: "top 85%", onEnter: () => node.classList.add('in-view') } });
+                });
+                gsap.utils.toArray('.section-title').forEach(title => {
+                    gsap.from(title, { scrollTrigger: { trigger: title, start: "top 80%" }, y: 50, opacity: 0, duration: 1, ease: "power3.out" });
+                });
+
+                document.querySelector('.hamburger').addEventListener('click', () => {
+                    document.querySelector('.nav-menu').classList.toggle('active');
+                });
+            } catch (globalError) {
+                console.error("Critical UI Initialization Error:", globalError);
+            } finally {
+                // Always hide the loading screen so the user is never stuck
+                setTimeout(() => {
+                    const loader = document.querySelector('.loader-container');
+                    if (loader && loader.style.display !== 'none') {
+                        gsap.to('.loader-container', {
+                            opacity: 0, duration: 0.5, onComplete: () => {
+                                loader.style.display = 'none';
+                                gsap.from('.hero-title', { y: 30, opacity: 0, duration: 1, ease: "power3.out" });
+                                gsap.from('.hero-desc', { y: 20, opacity: 0, delay: 0.2, duration: 1 });
+                            }
+                        });
+                    }
+                }, 1000);
+            }
+        });
+    </script>
