@@ -1868,45 +1868,29 @@
 
         </section>
 
-        <section id="resources" class="section-wrapper">
-            <div class="section-header">
-                <h2 class="section-title">Resource <span>Library</span></h2>
-                <div style="margin-top:2rem;">
-                    <button class="btn btn-secondary hover-trigger" onclick="filterResources('all')">All</button>
-                    <button class="btn btn-secondary hover-trigger"
-                        onclick="filterResources('beginner')">Beginner</button>
-                    <button class="btn btn-secondary hover-trigger"
-                        onclick="filterResources('advanced')">Advanced</button>
-                </div>
-            </div>
-            <div class="grid" id="resourcesGrid"></div>
-        </section>
+        
 
         <section id="events" class="section-wrapper">
             <div class="section-header">
                 <h2 class="section-title">Club <span>Events</span></h2>
             </div>
             <h3 style="color:var(--text-muted); margin-bottom:1.5rem;">Upcoming</h3>
+            <div class="grid">
+                <div class="card hover-trigger" style="text-align: center; border-color: var(--accent-primary);">
+                    <span class="tag" style="background:var(--accent-primary); color:white;">Registration Open</span>
+                    <h3 style="font-size:2.5rem; margin:1.5rem 0;">CyberDefense 2026 CTF</h3>
+                    <p style="max-width:700px; margin:0 auto 2rem;">
+                        Join 50+ teams in a 48-hour endurance test of your hacking skills. Challenges include Web
+                        Exploitation, Cryptography, Reverse Engineering, and Forensics.
+                    </p>
+                    <a href="register.html" class="btn btn-primary" style="text-decoration: none;">Register
+                        Team</a>
+                </div>
+            </div>
             <div class="grid" id="upcomingEventsGrid"></div>
 
             <h3 style="color:var(--text-muted); margin:4rem 0 1.5rem;">Past Archives</h3>
             <div class="grid" id="pastEventsGrid"></div>
-        </section>
-
-        <section id="hackathon" class="section-wrapper">
-            <div class="section-header">
-                <h2 class="section-title">CyberDefense <span>CTF</span></h2>
-            </div>
-            <div class="card hover-trigger" style="text-align: center; border-color: var(--accent-primary);">
-                <span class="tag" style="background:var(--accent-primary); color:white;">Registration Open</span>
-                <h3 style="font-size:2.5rem; margin:1.5rem 0;">Capture The Flag 2026</h3>
-                <p style="max-width:700px; margin:0 auto 2rem;">
-                    Join 50+ teams in a 48-hour endurance test of your hacking skills. Challenges include Web
-                    Exploitation, Cryptography, Reverse Engineering, and Forensics.
-                </p>
-                <a href="register.html" class="btn btn-primary" style="text-decoration: none;">Register
-                    Team</a>
-            </div>
         </section>
 
         <section id="members" class="section-wrapper">
